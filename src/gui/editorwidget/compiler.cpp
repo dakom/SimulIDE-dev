@@ -34,6 +34,7 @@ Compiler::Compiler( CodeEditor* editor, OutPanelText* outPane )
     m_firmware = "";
     m_buildPath = m_fileDir;
     m_fileProps = false;
+    m_uploadHex = true;
 
     clearCompiler();
 

@@ -81,8 +81,9 @@ void FindReplace::on_replAllButton_clicked()
     QList<QTextEdit::ExtraSelection> extraSelections;
     m_editor->setFound( extraSelections );
 
-    m_textCursor.setPosition( 0 );
-    m_editor->setTextCursor( m_textCursor );
+    QTextCursor cursor = m_editor->textCursor(); // m_textCursor can be null
+    cursor.setPosition( 0 );
+    m_editor->setTextCursor( cursor );
 
     int i=0;
     while( find( true ) )
@@ -117,9 +118,12 @@ bool FindReplace::find( bool next )
         QRegularExpression reg(toSearch, (caseS->isChecked() ? QRegularExpression::NoPatternOption
                                                              : QRegularExpression::CaseInsensitiveOption));
 
-        m_textCursor = m_editor->document()->find( reg, m_textCursor, flags );
-        m_editor->setTextCursor( m_textCursor );
-        result = !m_textCursor.isNull();
+        QTextCursor found = m_editor->document()->find( reg, m_editor->textCursor(), flags );
+        result = !found.isNull();
+        if( result ){             // A null cursor would leave the editor unusable
+            m_textCursor = found;
+            m_editor->setTextCursor( found );
+        }
     }
     else result = m_editor->find( toSearch, flags );
 

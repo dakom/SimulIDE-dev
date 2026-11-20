@@ -45,7 +45,7 @@ void ValLabelWidget::updateValue()
     if( !m_watched ) return;
 
     if( m_type == "string" ) setValueStr( m_watched->getStrReg( m_name ) );
-    if( m_type == "double" ) setValueDbl( m_watched->getDblReg( m_name ) );
+    else if( m_type == "double" ) setValueDbl( m_watched->getDblReg( m_name ) );
     else                     setValueInt( m_watched->getIntReg( m_name ) );
 }
 

@@ -338,7 +338,7 @@ int BaseDebugger::getValidLine( codeLine_t line )
         }
     }
     while( !lineList.contains( lineNumber ) && lineNumber<=lastLine ) lineNumber++;
-    if( lineNumber == lastLine && !lineList.contains( lineNumber ) ) return -1; // No valid line found
+    if( lineNumber > lastLine ) return -1; // No valid line found
     return lineNumber;
 }
 

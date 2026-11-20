@@ -162,8 +162,8 @@ void OscWidget::on_timePosBox_valueChanged( double timePos )
 
 void OscWidget::updateTimePosBox( int ch, int64_t timePos)
 {
-    m_blocked = true;
     if( m_channel < 4 && m_channel != ch ) return;
+    m_blocked = true;
 
     double val = timePos;
     QString unit = " p";
@@ -216,8 +216,8 @@ void OscWidget::on_voltDivBox_valueChanged( double voltDiv )
 
 void OscWidget::updateVoltDivBox( int ch, double voltDiv )
 {
-    m_blocked = true;
     if( m_channel < 4 && m_channel != ch ) return;
+    m_blocked = true;
 
     double val  = voltDiv*1e12;
     QString unit = " p";
@@ -269,8 +269,8 @@ void OscWidget::on_voltPosBox_valueChanged( double voltPos )
 
 void OscWidget::updateVoltPosBox(int ch, double voltPos )
 {
-    m_blocked = true;
     if( m_channel < 4 && m_channel != ch ) return;
+    m_blocked = true;
     double  val  = voltPos*1e12;
     QString unit = " p";
     int Vdecimals = 0;
