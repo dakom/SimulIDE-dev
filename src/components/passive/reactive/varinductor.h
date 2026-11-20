@@ -31,7 +31,7 @@ class VarInductor : public Dialed, public eReactive
     protected:
         void updateProxy() override;
         double updtRes()  override { return m_inductance/m_tStep; }
-        double updtCurr() override { return m_volt*m_admit; }
+        double updtCurr() override { return m_curSource - m_volt*m_admit; }
 
     private:
         eNode* m_midEnode;

@@ -92,6 +92,7 @@ void VarCapacitor::initialize()
 
     m_midEnode = new eNode( m_elmId+"-mideNode");
 
+    m_capacitance = Dialed::m_value; // Needed in stamp(), before first updateStep()
     m_needUpdate = true;
 }
 

@@ -92,6 +92,7 @@ void VarInductor::initialize()
 
     m_midEnode = new eNode( m_elmId+"-mideNode");
 
+    m_inductance = Dialed::m_value; // Needed in stamp(), before first updateStep()
     m_needUpdate = true;
 }
 

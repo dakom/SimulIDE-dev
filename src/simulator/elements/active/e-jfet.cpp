@@ -100,7 +100,7 @@ void eJfet::voltChanged()
         if( Vds < gateV)
         {
             current = m_beta*( 2*( gateV )*Vds-qPow( Vds , 2 ))*correction;
-            tempAdmit = current/Vds;
+            tempAdmit = m_beta*( 2*gateV - Vds )*correction; // = current/Vds, but valid for Vds = 0
         }
         else //(i.e., Vds >= gateV
         {

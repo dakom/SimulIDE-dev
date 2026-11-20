@@ -55,7 +55,7 @@ bool Node::hasCurrents() // calculate current when 2 pins already have current
 {
     int noCurrent = -1;
     int currents = 0;
-    double current;
+    double current = 0;
     for( int i=0; i<3; i++ )
     {
         if( m_pin[i]->conPin()->hasCurrent() )
