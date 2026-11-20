@@ -72,7 +72,9 @@ Ks0108::Ks0108( QString type, QString id )
     
     setLabelPos( -32,-68, 0);
     setShowId( true );
-    
+
+    m_Write   = false;
+    m_lastScl = false;
     Ks0108::initialize();
 
     addPropGroup( { tr("Main"), {

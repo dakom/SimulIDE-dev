@@ -19,6 +19,10 @@ OscWidget::OscWidget( QWidget* parent , Oscope* oscope )
                    | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint );
 
     m_oscope = oscope;
+    m_timeDivDialPos = timeDivDial->value();
+    m_timePosDialPos = timePosDial->value();
+    m_voltDivDialPos = voltDivDial->value();
+    m_voltPosDialPos = voltPosDial->value();
     m_blocked = false;
     m_action = actNone;
     m_channel = 4;

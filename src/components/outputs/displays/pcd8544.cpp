@@ -45,6 +45,7 @@ Pcd8544::Pcd8544( QString type, QString id )
     m_graphical = true;
 
     m_area = QRectF( -52, -52, 104, 84 );
+    m_lastScl = false;
 
     m_pin.resize( 5 );
     m_pin[0] = &m_pRst;

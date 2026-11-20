@@ -20,6 +20,7 @@ ConnBase::ConnBase( QString type, QString id )
     //this->setZValue(-1 );
 
     m_size = 0;
+    m_pinType = Pin::pinNormal;
     setSize( 8 );
     setLabelPos(-16,-44, 0);
 

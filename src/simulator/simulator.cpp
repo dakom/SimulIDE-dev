@@ -169,9 +169,10 @@ void Simulator::timerEvent( QTimerEvent* e )  //update at m_timerTick_ms rate (5
         int counter = 0;
         while( !nodeCompList.isEmpty() )
         {
+            QList<Node*> pending;               // Don't remove from the list while iterating it
             for( Node* node : nodeCompList )
-                if( node->hasCurrents() )
-                    nodeCompList.removeOne( node );
+                if( !node->hasCurrents() ) pending.append( node );
+            nodeCompList = pending;
             counter++;
             if( counter > 100 ) break;
         }

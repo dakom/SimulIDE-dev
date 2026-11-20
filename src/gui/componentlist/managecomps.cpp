@@ -65,6 +65,14 @@ void manCompDialog::addItem( TreeItem* treeItem )
     else listItem->setIcon( ThemeManager::self()->icon(":/blanc.png") );
 }
 
+void manCompDialog::reset()
+{
+    m_initialized = false;       // Also stops slotItemChanged using the maps
+    table->setRowCount( 0 );
+    m_treeToList.clear();
+    m_treeToShort.clear();
+}
+
 void manCompDialog::initialize( TreeItem* treeItem )
 {
     if( !m_initialized )

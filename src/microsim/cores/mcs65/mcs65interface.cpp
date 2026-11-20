@@ -21,8 +21,8 @@ QString Mcs65Interface::getStrInst( uint8_t IR ) // Called by Mcu Monitor to get
     switch( IR )                     // Irregular Instructions
     {
         case 0x00: return "BRK";       break;
-        case 0x01: break;
-        case 0x02: return "ORA (d,x)"; break;
+        case 0x01: return "ORA (d,X)"; break;
+        case 0x02: break;
         case 0x03: break;
         case 0x04: break;
         case 0x05: return "ORA d";     break;

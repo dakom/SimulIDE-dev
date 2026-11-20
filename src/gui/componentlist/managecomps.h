@@ -18,6 +18,7 @@ class manCompDialog : public QDialog, private Ui::manCompDialog
         manCompDialog( QWidget* parent );
 
         void initialize( TreeItem* treeItem );
+        void reset();           // Component list is going to be rebuilt: forget its TreeItems
 
     private slots:
         void slotItemChanged( QTableWidgetItem* item );

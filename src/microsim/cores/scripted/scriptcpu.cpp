@@ -555,7 +555,7 @@ void ScriptCpu::setProp( ComProperty* p, QString val )
         QStringList l = val.split(" ");
         val = l.first();
         if( l.size() > 1 ) multiplier = getMultiplier( l.at(1) );
-        if     ( type == "int"    ) m_context->SetArgDWord(  0, val.toInt()*multiplier );
+        if     ( type == "int"    ) m_context->SetArgDWord(  0, (int)(val.toInt()*multiplier) ); // Negative double to unsigned is undefined
         else if( type == "uint"   ) m_context->SetArgDWord(  0, val.toUInt()*multiplier );
         else if( type == "double" ) m_context->SetArgDouble( 0, val.toDouble()*multiplier );
     }

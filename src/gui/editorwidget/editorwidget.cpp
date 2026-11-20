@@ -196,6 +196,9 @@ bool EditorWidget::close()
         m_docWidget->setCurrentIndex( i );
         if( !maybeSave() ) return false;
     }
+    for( CodeEditor* ce : getCodeEditors() )      // All saved or discarded: don't ask again in closeTab()
+        ce->document()->setModified( false );
+
     while( m_docWidget->count() )
     {
         m_docWidget->setCurrentIndex( 0 );
