@@ -124,8 +124,8 @@ void AvrUsart::configureC( uint8_t newUCSRnC ) // UCSRnC changed
     setDataBits( m_ucsz01+m_ucsz2+5 );
 
     uint8_t par = getRegBitsVal( newUCSRnC, m_pariRB );
-    if( par > 0 ) m_parity = (parity_t)(par-1);
-    else          m_parity = parNONE;
+    if( par >= 2 ) m_parity = (parity_t)par; // UPMn: 2 = Even (parEVEN), 3 = Odd (parODD)
+    else           m_parity = parNONE;
 
     /*if( sm0 )  // modes 2 and 3
     {
