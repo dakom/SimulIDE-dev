@@ -29,6 +29,7 @@ Socket::Socket( QString type, QString id )
     setZValue(-2 );
 
     m_pinType = Pin::pinSocket;
+    for( Pin* pin : m_sockPins ) pin->setPinType( m_pinType ); // Pins already created by ConnBase
 
     m_color = QColor( 50, 50, 70 );
 

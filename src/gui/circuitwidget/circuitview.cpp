@@ -42,6 +42,7 @@ CircuitView::CircuitView( QWidget *parent )
     m_circuit   = nullptr;
     m_enterItem = nullptr;
     m_waitForDragStart = false;
+    m_panning = false;
 
     //viewport()->setFixedSize( 3200, 2400 );
     bool scrollBars = MainWindow::self()->settings()->value( "Circuit/showScroll" ).toBool();
@@ -178,10 +179,18 @@ void CircuitView::mousePressEvent( QMouseEvent* event )
         setDragMode( QGraphicsView::ScrollHandDrag );
 
         QGraphicsView::mousePressEvent( event );
-        if( event->isAccepted() ) return;
+        if( event->isAccepted() ) return;             // An item is using middle button (move wire)
 
-        event = new QMouseEvent( QEvent::MouseButtonPress, event->pos(),
-                                 Qt::LeftButton, Qt::LeftButton, Qt::ShiftModifier );
+        // Start panning: QGraphicsView only pans with left button.
+        // Don't let this fake left click reach the Circuit or it would grab/select items instead of panning.
+        QMouseEvent press( QEvent::MouseButtonPress, event->pos(),
+                           Qt::LeftButton, Qt::LeftButton, Qt::NoModifier );
+        bool interactive = isInteractive();
+        setInteractive( false );
+        QGraphicsView::mousePressEvent( &press );
+        setInteractive( interactive );
+        m_panning = true;
+        return;
     }
     QGraphicsView::mousePressEvent( event );
 }
@@ -207,14 +216,26 @@ void CircuitView::mouseMoveEvent( QMouseEvent* event )
 
 void CircuitView::mouseReleaseEvent( QMouseEvent* event )
 {
-    if( event->button() == Qt::MiddleButton
+    if( m_panning && event->button() == Qt::MiddleButton ) // End panning (never reached the Circuit)
+    {
+        m_panning = false;
+        event->accept();
+        QMouseEvent eve( QEvent::MouseButtonRelease, event->pos(),
+            Qt::LeftButton, event->buttons(), Qt::NoModifier );
+
+        bool interactive = isInteractive();
+        setInteractive( false );
+        QGraphicsView::mouseReleaseEvent( &eve );
+        setInteractive( interactive );
+    }
+    else if( event->button() == Qt::MiddleButton
      || ( event->button() == Qt::LeftButton
         && event->modifiers() & Qt::ShiftModifier
         && !(event->modifiers() & Qt::ControlModifier) ) )
     {
         event->accept();
-        QMouseEvent eve( QEvent::MouseButtonRelease, event->pos(),
-            Qt::LeftButton, Qt::LeftButton, Qt::NoModifier   );
+        QMouseEvent eve( QEvent::MouseButtonRelease, event->pos(),  // Buttons must be the real ones: a button still
+            Qt::LeftButton, event->buttons(), Qt::NoModifier   );   // pressed here keeps the item grabbing the mouse
 
         QGraphicsView::mouseReleaseEvent( &eve );
     }
@@ -240,10 +261,15 @@ void CircuitView::contextMenuEvent( QContextMenuEvent* event )
         return;
     }
     QGuiApplication::restoreOverrideCursor();
+
+    if( m_circuit->is_constarted() ){ // Right click while drawing a wire only cancels the wire
+        m_circuit->deleteNewConnector();
+        event->accept();
+        return;
+    }
     QGraphicsView::contextMenuEvent( event );
 
-    if( m_circuit->is_constarted() ) m_circuit->deleteNewConnector();
-    else if( !event->isAccepted() )
+    if( !event->isAccepted() )
     {
         QPointF eventPos = mapToScene( event->globalPos() ) ;
         m_eventpoint = mapToScene( event->pos()  );

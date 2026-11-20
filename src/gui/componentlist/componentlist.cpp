@@ -60,6 +60,9 @@ ComponentList::~ComponentList(){}
 
 void ComponentList::createList()
 {
+    m_mcDialog.reset();          // TreeItems are deleted here: don't keep pointers to them
+    m_clickedItem = nullptr;
+
     this->clear();
     m_components.clear();
     m_categories.clear();

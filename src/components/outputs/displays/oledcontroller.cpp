@@ -40,6 +40,9 @@ OledController::OledController( QString type, QString id )
 
     setShowId( true );
 
+    m_width  = 0;
+    m_height = 0;
+    m_rows   = 0;
     reset();
 }
 OledController::~OledController(){}

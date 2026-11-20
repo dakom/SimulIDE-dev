@@ -195,6 +195,7 @@ void Pin::isMoved()
     else if( this->isVisible() && !my_connector )
     {                                       // Auto-Connect
         if( !Circuit::self()->isBusy()
+         && !Circuit::self()->is_constarted()         // Don't replace a wire that is being drawn
          && (QApplication::queryKeyboardModifiers() == Qt::ShiftModifier) )
             connectPin( true );
     }
@@ -219,6 +220,8 @@ void Pin::mousePressEvent( QGraphicsSceneMouseEvent* event )
             if( Circuit::self()->is_constarted() )
             {
                 Connector* con = Circuit::self()->getNewConnector();
+                if( con->startPin() == this ) // Second click in start Pin (double click): don't connect Pin to itself
+                { event->accept(); return; }
                 if( con->isBus() != m_isBus ) // Avoid connect Bus with no-Bus
                 { event->ignore(); return; }
             }

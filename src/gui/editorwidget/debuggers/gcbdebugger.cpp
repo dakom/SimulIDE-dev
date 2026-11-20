@@ -149,7 +149,7 @@ bool GcbDebugger::mapFlashToSource()  // Map asm_source_line <=> gcb_source_line
     }
     QStringList lstLines = fileToStringList( lstFile, "GcbDebugger::mapFlashToSource" );
     QString lstLine;
-    while( lstLine != "BASPROGRAMSTART" ) // Go to the program start in lst file
+    while( !lstLines.isEmpty() && lstLine != "BASPROGRAMSTART" ) // Go to the program start in lst file
     {
         lstLine = lstLines.takeFirst();
         lstLine.remove("\t");

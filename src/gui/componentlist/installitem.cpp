@@ -18,6 +18,8 @@ InstallItem::InstallItem( Installer* parent, QString item )
 {
     m_Installer = parent;
     m_infoWidget = nullptr;
+    m_version     = 0;
+    m_versionNext = 0;
 
     setupUi( this );
     setItem( item );

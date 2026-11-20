@@ -265,7 +265,7 @@ void ConnectorLine::mousePressEvent( QGraphicsSceneMouseEvent* event )
            if( Circuit::self()->is_constarted() )     // Wire started at Pin is connecting here
            {
                Connector* con = Circuit::self()->getNewConnector();
-               if( con == this->connector() ) return;
+               if( con == this->connector() ) { event->ignore(); return; } // Click over the wire being drawn: let it reach items below
                if( con->isBus() != m_isBus ) { event->ignore(); return; } // Avoid connect Bus with no-Bus
            }
            QPoint point1 = toGrid( event->scenePos() ).toPoint();

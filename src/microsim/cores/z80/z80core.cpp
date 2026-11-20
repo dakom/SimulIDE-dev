@@ -389,7 +389,7 @@ QString Z80Core::getStrReg( uint8_t reg )
         case 3: strReg = "E"; break;
         case 4: strReg = XYState == rIX ? "XH" : ( XYState == rIY ? "YH" : "H" ); break;
         case 5: strReg = XYState == rIX ? "XL" : ( XYState == rIY ? "YL" : "L" ); break;
-        case 6: if( XYState == rHL ) strReg = "(HL)"; break; //?? tady se musí doplnit ještě IX+d a IY+d
+        case 6: if( XYState == rHL ) { strReg = "(HL)"; break; } //?? tady se musí doplnit ještě IX+d a IY+d
                 if( XYState == rIX ) strReg = "(IX";
                 if (XYState == rIY ) strReg = "(IY";
                 switch( sm_MCycle ) {

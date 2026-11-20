@@ -866,7 +866,7 @@ QList<int> CodeEditor::getFound()
 {
     QList<int> found;
     for( QTextEdit::ExtraSelection es : m_found )
-        found.append( es.cursor.blockNumber() );
+        found.append( es.cursor.blockNumber()+1 ); // 1-based like breakpoints, errors and warnings
     return found;
 }
 

@@ -21,6 +21,9 @@ LaWidget::LaWidget( QWidget* parent , LAnalizer* la )
                    | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint );
 
     m_analizer = la;
+    m_timeDivDialPos = timeDivDial->value();
+    m_timePosDialPos = timePosDial->value();
+    m_voltDivDialPos = 0;
     m_blocked = false;
     m_action = actNone;
 
