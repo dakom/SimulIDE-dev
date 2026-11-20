@@ -305,6 +305,7 @@ void OneWire::setROM( QString ROMstr )
     bool ok;
     QStringList lstROM = ROMstr.split(" ");
     lstROM.removeAll("");
+    if( lstROM.size() < 8 ) return;
     for( int i=0; i<8; ++i ) m_ROM[i] = lstROM.at( i ).toInt( &ok, 16 );
     //qDebug() << idLabel() <<"OneWire::setROM"<<arrayToHex( m_ROM, 8 );
 }

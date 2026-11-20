@@ -83,7 +83,7 @@ uint16_t DataSpace::getRegAddress( QString reg )// Get Reg address by name
 {
     uint16_t addr = 65535;
     if( m_regInfo.contains( reg ) ) addr = m_regInfo.value( reg ).address;
-    else if( m_regInfo.contains( reg.toUpper() ) ) addr = m_regInfo.value( reg ).address;
+    else if( m_regInfo.contains( reg.toUpper() ) ) addr = m_regInfo.value( reg.toUpper() ).address;
 
     return addr;
 }

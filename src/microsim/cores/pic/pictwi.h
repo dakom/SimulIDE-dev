@@ -36,7 +36,7 @@ class PicTwi : public McuTwi
 
     protected:
         virtual void setTwiState( twiState_t state ) override;
-        uint8_t getStaus() { return *m_statReg &= 0b11111000; }
+        uint8_t getStaus() { return *m_statReg & 0b11111000; }
 
         uint8_t m_bitRate;
 

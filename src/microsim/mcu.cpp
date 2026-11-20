@@ -538,7 +538,7 @@ bool Mcu::load( QString fileName )
     if( m_propDialog ) m_propDialog->updtValues();
 
     QSettings* settings = MainWindow::self()->settings();
-    settings->setValue( "lastFirmDir", circuitDir.relativeFilePath( fileName ) );
+    settings->setValue( "lastFirmDir", m_lastFirmDir );
 
     return true;
 }
