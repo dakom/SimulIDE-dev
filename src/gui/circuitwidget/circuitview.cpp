@@ -41,6 +41,7 @@ CircuitView::CircuitView( QWidget *parent )
     m_help = "";
     m_circuit   = nullptr;
     m_enterItem = nullptr;
+    m_waitForDragStart = false;
 
     //viewport()->setFixedSize( 3200, 2400 );
     bool scrollBars = MainWindow::self()->settings()->value( "Circuit/showScroll" ).toBool();
