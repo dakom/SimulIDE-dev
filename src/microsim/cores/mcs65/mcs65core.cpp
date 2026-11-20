@@ -444,11 +444,11 @@ void Mcs65Cpu::Read()
                         readMem( m_u8Tmp0 );
                     }break;
                     case 4:{
-                        m_u8Tmp0 = readDataBus()+1;
-                        readMem( m_u8Tmp0 );          // Read addrH
+                        m_u8Tmp1 = readDataBus();     // addrL
+                        readMem( (uint8_t)(m_u8Tmp0+1) ); // Read addrH
                     }break;
                     case 5:{
-                        m_opAddr = m_u8Tmp0 | readDataBus()<<8;
+                        m_opAddr = m_u8Tmp1 | readDataBus()<<8;
                         readMem( m_opAddr );
                     }break;
                     case 6: m_op0 = readDataBus();    // Finish read operation
@@ -639,7 +639,7 @@ void Mcs65Cpu::NOP() { return; }
 void Mcs65Cpu::ORA() { m_Ac |= m_op0; setNZ( m_Ac ); } // OR ACCU
 
 void Mcs65Cpu::PHA() { pushStack8( m_Ac ); }
-void Mcs65Cpu::PHP() { pushStack8( STATUS(C) | STATUS(B) ); }
+void Mcs65Cpu::PHP() { pushStack8( *m_STATUS | CONSTANT | BREAK ); }
 
 void Mcs65Cpu::PLA()
 {
@@ -724,7 +724,7 @@ void  Mcs65Cpu::BXX() /// +1 cycle same page +2 different page
     uint8_t bit = 0;
     switch( m_u8Tmp0 ) {
         case 0: bit = N; break;
-        case 1: bit = O; break;
+        case 1: bit = V; break;
         case 2: bit = C; break;
         case 3: bit = Z; break;
     }
