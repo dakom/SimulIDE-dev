@@ -182,14 +182,14 @@ void Ssd1306::configScroll( uint8_t command )
     case 2: m_scrollStartY = m_rxReg & m_rowMask; break; // Define start page address
     case 3:{                                             // Scroll step time in terms of frame frequency
         switch( m_rxReg & m_rowMask ){
-        case 0: m_scrollStep = 5;
-        case 1: m_scrollStep = 64;
-        case 2: m_scrollStep = 128;
-        case 3: m_scrollStep = 256;
-        case 4: m_scrollStep = 3;
-        case 5: m_scrollStep = 4;
-        case 6: m_scrollStep = 25;
-        case 7: m_scrollStep = 2;
+        case 0: m_scrollStep = 5  ; break;
+        case 1: m_scrollStep = 64 ; break;
+        case 2: m_scrollStep = 128; break;
+        case 3: m_scrollStep = 256; break;
+        case 4: m_scrollStep = 3  ; break;
+        case 5: m_scrollStep = 4  ; break;
+        case 6: m_scrollStep = 25 ; break;
+        case 7: m_scrollStep = 2  ; break;
         }
     }break;
     case 4: m_scrollEndY    = m_rxReg & m_rowMask; break; // Define end page address

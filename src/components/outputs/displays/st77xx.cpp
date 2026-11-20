@@ -19,6 +19,7 @@ St77xx::St77xx( QString type, QString id )
     m_graphical = true;
 
     m_pixelMode = 6;
+    m_dataBytes = 3;
 
     m_pin.resize( 6 );
     m_pin[0] = &m_pinDC;
@@ -135,10 +136,10 @@ void St77xx::writeRam()
                     m_data = (buffer & 0b11111100) << 16;   // RRRRRR--
                 }break;
                 case 2:{
-                    m_data = (buffer & 0b11111100) <<  8;   // GGGGGG--
+                    m_data |= (buffer & 0b11111100) <<  8;  // GGGGGG--
                 }break;
                 case 3:{
-                    m_data = (buffer & 0b11111100) <<  0;   // BBBBBB--
+                    m_data |= (buffer & 0b11111100) <<  0;  // BBBBBB--
                     TftController::writeRam();
                 }break;
             }
