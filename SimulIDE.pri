@@ -106,14 +106,18 @@ macx {
     OS = MacOs
     ICON = $$PWD/resources/icons/simulide.icns
 
-    QMAKE_CXXFLAGS -= -stdlib=libc++
-    QMAKE_LFLAGS   -= -stdlib=libc++
-
 # To use gcc in MacOs you must force it.
-# Edit to match your system:
-    QMAKE_CC   = /usr/local/Cellar/gcc@7/7.5.0_4/bin/gcc-7
-    QMAKE_CXX  = /usr/local/Cellar/gcc@7/7.5.0_4/bin/g++-7
-    QMAKE_LINK = /usr/local/Cellar/gcc@7/7.5.0_4/bin/g++-7
+# Edit to match your system.
+# If not found, default toolchain (Apple clang) is used:
+    MAC_GCC = /usr/local/Cellar/gcc@7/7.5.0_4/bin
+    exists( $$MAC_GCC/g++-7 ) {
+        QMAKE_CXXFLAGS -= -stdlib=libc++
+        QMAKE_LFLAGS   -= -stdlib=libc++
+
+        QMAKE_CC   = $$MAC_GCC/gcc-7
+        QMAKE_CXX  = $$MAC_GCC/g++-7
+        QMAKE_LINK = $$MAC_GCC/g++-7
+    }
 }
 
 contains( QMAKE_HOST.arch, arm64|aarch64 ) | contains( QMAKE_CC, .*aarch64.* ){
