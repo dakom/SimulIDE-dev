@@ -1001,7 +1001,9 @@ void Circuit::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
     else if( event->button() == Qt::RightButton )
     {
         if( !m_conStarted ) QGraphicsScene::mouseReleaseEvent( event );
-}   }
+    }
+    else QGraphicsScene::mouseReleaseEvent( event ); // Other buttons: let the scene release the mouse grabber
+}
 
 void Circuit::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
 {

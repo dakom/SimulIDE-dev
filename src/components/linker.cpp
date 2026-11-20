@@ -17,7 +17,10 @@ Linker::Linker()
 {}
 Linker::~Linker()
 {
-    if( m_selecComp == this ) Linker::compSelected( nullptr ); // Cancel link to components
+    if( m_selecComp == this ){                                 // Cancel link to components
+        Linker::compSelected( nullptr );
+        QGuiApplication::restoreOverrideCursor();
+    }
     for( Component* comp : m_linkedComp ) comp->setLinkedTo( nullptr );
 }
 
@@ -53,7 +56,7 @@ void Linker::createLinks( QList<Component*>* compList )
 
 void Linker::startLinking()  // Start linking Components
 {
-    if( m_selecComp ) m_selecComp->compSelected( nullptr ); // Finish previous linking
+    stopLinking();                                          // Finish previous linking (and restore its cursor)
     m_selecComp = this;
 
     showLinked( true );

@@ -214,7 +214,8 @@ void Component::mousePressEvent( QGraphicsSceneMouseEvent* event )
             }   }
             setCursor( Qt::ClosedHandCursor );
         }
-        QApplication::focusWidget()->clearFocus();
+        QWidget* focusW = QApplication::focusWidget();
+        if( focusW ) focusW->clearFocus();
         CircuitView::self()->setFocus();
     }
     else if( event->button() == Qt::MiddleButton ) event->setAccepted( false );
@@ -315,6 +316,7 @@ void Component::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* event )
         parentComp->mouseDoubleClickEvent( event );
         return;
     }
+    if( Circuit::self()->is_constarted() ) return; // Drawing a wire (double click in Pin or wire)
     if( event->button() == Qt::LeftButton ) slotProperties();
 }
 

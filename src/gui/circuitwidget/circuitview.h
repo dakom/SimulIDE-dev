@@ -66,4 +66,5 @@ class CircuitView : public QGraphicsView
 
         QPoint m_mousePressPos;
         bool m_waitForDragStart;
+        bool m_panning;         // Panning with middle button
 };
