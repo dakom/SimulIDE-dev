@@ -92,10 +92,12 @@ void LedMatrix::setupMatrix( int rows, int cols )
 {
     if( Simulator::self()->isRunning() )  CircuitWidget::self()->powerCircOff();
 
+    QString color = ( m_rows > 0 && m_cols > 0 ) ? colorStr() : "Yellow";
     deleteMatrix();
     m_rows = rows;
     m_cols = cols;
     createMatrix();
+    setColorStr( color ); // New Leds are created with default color
 
     Circuit::self()->update();
 }

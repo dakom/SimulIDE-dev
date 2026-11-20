@@ -118,7 +118,7 @@ void Image::setBackground( QString bck )
     {
         if( m_movie ) delete m_movie;
 
-        m_movie = new QMovie( bck );
+        m_movie = new QMovie( absPath );
         /// FIXME: m_movie->setParent( this );
 
         if( m_movie->isValid() )

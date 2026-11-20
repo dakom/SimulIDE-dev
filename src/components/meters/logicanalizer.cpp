@@ -398,7 +398,7 @@ void LAnalizer::dumpData( QString fn )
     out << Qt::endl <<"$enddefinitions $end"<< Qt::endl;
     out << dumpVars;
 
-    uint64_t timeStamp;
+    uint64_t timeStamp = 0;
     for( uint64_t time : samples.uniqueKeys() )
     {
         timeStamp = time/gcd;

@@ -65,6 +65,10 @@ Ds18b20::Ds18b20( QString type, QString id )
 
     generateROM( 0x28 );  // FAMILY CODE = 28h for DS18B20
 
+    m_TH  = 0x4B; // EEPROM default values
+    m_TL  = 0x46;
+    m_CFG = 0x7F;
+
     m_scratchpad[0] = 0xFF;
     m_scratchpad[1] = 0x07;
     m_scratchpad[2] = 0x4B; /// TH  reg, default value

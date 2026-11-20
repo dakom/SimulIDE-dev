@@ -184,7 +184,7 @@ void DynamicMemory::voltChanged()        // Some Pin Changed State, Manage it
         m_cas = CAS;
         if ( CAS && RAS )     // falling edge at /CAS
         {
-            m_address = m_rowAddress * pow( 2, m_rowAddrBits );
+            m_address = m_rowAddress * pow( 2, m_colAddrBits );
             for( int i=0; i<m_colAddrBits; ++i )                // Get Address
             {
                 bool state = m_inpPin[i]->getInpState();

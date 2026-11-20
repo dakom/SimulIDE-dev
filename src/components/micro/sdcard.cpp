@@ -297,13 +297,14 @@ void SdCard::writeData()
     else if( m_bytesToWrite == 2 )          // CRC High byte
         m_crc16 = (uint16_t)m_rxReg << 8;
     else if( m_bytesToWrite == 3 ){          // Write data to Disk
+        m_buffer[511] = m_rxReg;             // Last data byte
         int64_t writen = m_diskImage->write( reinterpret_cast<const char*>(m_buffer), 512 );
         if( writen < 0 ) {;} /// TODO: write error
         //qDebug() << "Writen" << writen ;
         //qDebug() << reinterpret_cast<const char*>(m_buffer);
         //qDebug() << m_buffer;
     }
-    else {
+    else if( m_bytesToWrite <= 514 ){
         m_buffer[514-m_bytesToWrite] = m_rxReg; // Data
     }
     m_bytesToWrite--;
@@ -322,7 +323,7 @@ void SdCard::readDataBlock()
 void SdCard::eraseBlocks()
 {
     memset( m_buffer, 0, 512 );
-    if( !m_diskImage->seek( m_arg ) ){ qDebug() << "SdCard::eraseBlocks: File seek failed"; return; }
+    if( !m_diskImage->seek( (qint64)m_start*512 ) ){ qDebug() << "SdCard::eraseBlocks: File seek failed"; return; }
     for( uint32_t i = m_start; i<m_end; i++ ) m_diskImage->write( reinterpret_cast<const char*>(m_buffer), 512 );
 }
 

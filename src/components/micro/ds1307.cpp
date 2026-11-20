@@ -91,7 +91,7 @@ void DS1307::readByte()               // Write to RAM
 {
     if( m_phase == 0 ){
         m_phase = 1;
-        m_addrPtr = m_rxReg;
+        m_addrPtr = m_rxReg & 0x3F; // 64 registers
     }else{
         m_data[m_addrPtr] = m_rxReg;
         if( m_addrPtr < 8 ){

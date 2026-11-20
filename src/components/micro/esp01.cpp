@@ -46,6 +46,8 @@ Esp01::Esp01( QString type, QString id )
     setLabelPos(-20,-34, 0 );
 
     m_debug = true;
+    m_mode    = 0;
+    m_multCon = 0;
     m_OK    = "\r\nOK\r\n";
     m_ERROR = "\r\nERROR\r\n"; // Default reply: Error //+CWJAP:<5>
 
@@ -126,7 +128,7 @@ void Esp01::updateStep()
             if( m_debug ) qDebug() << "Esp01 - Disconnecting link"<<m_link<<"from"<<m_host<< m_port;
             tcpSocket->disconnectFromHost();
         }
-        else if( m_debug ) qDebug() << "Esp01 - Error Disconnecting link"<<m_link<<"from"<<m_host<< m_port
+        else if( m_debug && tcpSocket ) qDebug() << "Esp01 - Error Disconnecting link"<<m_link<<"from"<<m_host<< m_port
                                     <<"\n              State = "<<tcpSocket->state();
         }break;
     case uartReply:

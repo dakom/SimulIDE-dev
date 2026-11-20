@@ -183,6 +183,7 @@ void Stepper::setSteps( int steps ) //" 4, 8,16,32"
     m_steps *= 4;
     m_steps += remainder;
     if( m_steps < 4 ) m_steps = 4;
+    if( m_steps > 2880 ) m_steps = 2880; // m_stpang must be > 0
     m_stpang = 360*8/m_steps;
     m_ang  = 0;
     m_Ppos = 4;

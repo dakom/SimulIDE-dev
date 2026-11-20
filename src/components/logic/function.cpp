@@ -173,6 +173,7 @@ void Function::setFunctions( QString f )
 {
     if( Simulator::self()->isRunning() ) CircuitWidget::self()->powerCircOff();
     m_funcList = f.split(",");
+    while( m_funcList.size() < (int)m_outPin.size() ) m_funcList.append(""); // One function for each output
     m_compiled = false;
 }
 

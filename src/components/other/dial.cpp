@@ -50,6 +50,7 @@ Dial::Dial( QString type, QString id )
     m_minVal = 0;
     m_maxVal = 999;
     m_steps  = 1000;
+    m_dialW.setMaximum( m_steps-1 );
 
     setValLabelPos( 15,-20, 0 );
     setLabelPos(-16,-40, 0);
