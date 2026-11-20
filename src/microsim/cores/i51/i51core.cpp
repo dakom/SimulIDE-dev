@@ -9,7 +9,7 @@
 #include "mcupin.h"
 
 #define ACC  m_acc[0]
-#define BANK ( (STATUS(RS0)>>RS0) | (STATUS(RS1)>>RS1) ) //( (PSW & (PSWMASK_RS0|PSWMASK_RS1))>>PSW_RS0 )
+#define BANK ( (*m_STATUS>>RS0) & 3 ) //( (PSW & (PSWMASK_RS0|PSWMASK_RS1))>>PSW_RS0 )
 #define I_RX_VAL ( m_dataMem[(m_opcode & 1) + 8*BANK] )
 #define RX_ADDR ( (m_opcode & 7) + 8*BANK )
 
@@ -348,8 +348,8 @@ void I51Core::ORLc()
     uint8_t carry = STATUS(Cy) >> Cy;
 
     uint8_t value = GET_RAM( m_bitAddr ) & m_bitMask;
-    if( m_invert ) value = value ? 1 : carry;
-    else           value = value ? carry : 1;
+    if( m_invert ) value = value ? carry : 1;
+    else           value = value ? 1 : carry;
 
     write_S_Bit( Cy, value );
 }
@@ -685,7 +685,7 @@ void I51Core::Decode()
                        addrDir(); m_rCycles = 4; break;   // 3-2 CJNE Ac == Di   ? 0 :Jump
             case 0xb6:
             case 0xb7: operInd(); opr2I08();
-                       addrDir();                break;   // 3-2 CJNE In == #in8 ? 0 :Jump
+                       addrDir(); m_rCycles = 4; break;   // 3-2 CJNE In == #in8 ? 0 :Jump
 
             case 0xc0: operDir(); m_rCycles = 4; break;   // 2-2 PUSH Stack <- Di
             case 0xc1: addrI08(); m_rCycles = 4; break;   // 2-2 AJMP addr11

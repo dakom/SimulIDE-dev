@@ -169,6 +169,7 @@ void WaveGen::runEvent()
     if( !m_isRunning ) return;
 
     m_time = fmod( Simulator::self()->circTime() - m_phaseTime, m_psPerCycleDbl );
+    if( m_time < 0 ) m_time += m_psPerCycleDbl;
 
     switch( m_waveType ) {
         case Sine:     genSine();     break;
@@ -238,6 +239,8 @@ void WaveGen::genRandom()
 
 void WaveGen::genWav()
 {
+    if( m_data.empty() ){ m_vOut = 0; return; } // No file loaded
+
     m_vOut = m_data.at( m_index );
 
     m_index++;

@@ -67,6 +67,9 @@ void ComponentList::createList()
     m_dataFileList.clear();
     m_dirFileList.clear();
 
+    m_listFile  = MainWindow::self()->getConfigPath("compList.xml");
+    m_oldConfig = !QFile::exists( m_listFile ); // xml file doesn't exist: read old config (used while adding items)
+
     LoadLibraryItems();
 
     QString userDir = MainWindow::self()->userPath();
@@ -84,8 +87,6 @@ void ComponentList::createList()
 
     MainWindow::self()->installer()->loadInstalled(); // Load Installed components
 
-    m_listFile  = MainWindow::self()->getConfigPath("compList.xml");
-    m_oldConfig = !QFile::exists( m_listFile ); // xml file doesn't exist: read old config
     if( !m_oldConfig ) readConfig(); // Read new xml config file
 
     for( TreeItem* it : m_categoryList ) // Remove empty categories
@@ -262,7 +263,7 @@ void ComponentList::loadXml( QString xmlFile )
                 TreeItem* parentItem = item->parentItem();
                 parentItem->takeChild( parentItem->indexOfChild( item) );
                 catItem->addChild( item );
-                if( parentItem->childCount() == 0 )
+                if( parentItem->childCount() == 0 && parentItem->parent() )
                     parentItem->parent()->removeChild( parentItem );
             }
             else
@@ -380,7 +381,7 @@ void ComponentList::addItem( QString caption, TreeItem* catItem, QPixmap &icon, 
 
         QString shortCut = MainWindow::self()->compSettings()->value( name+"/shortcut" ).toString();
         item->setShortCut( shortCut );
-        if( !shortCut.isEmpty() ) m_shortCuts[name] = shortCut;
+        if( !shortCut.isEmpty() ) m_shortCuts[shortCut] = name;
     }
 }
 

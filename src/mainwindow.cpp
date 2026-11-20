@@ -356,10 +356,10 @@ QString MainWindow::getHelp( QString name, bool save )
 
     name = name.toLower().replace( " ", "" );
 
-    QString                dfPath = getFilePath( name+locale, m_userDir+"help" );
+    QString                dfPath = getFilePath( name+locale, QDir( m_userDir ).absoluteFilePath("help") );
     if( dfPath.isEmpty() ) dfPath = getFilePath( name+locale, m_configDir.absoluteFilePath("help") );
     if( dfPath.isEmpty() ) dfPath = getFilePath( name+locale, ":/help" );
-    if( dfPath.isEmpty() ) dfPath = getFilePath( name, m_userDir+"help" );
+    if( dfPath.isEmpty() ) dfPath = getFilePath( name, QDir( m_userDir ).absoluteFilePath("help") );
     if( dfPath.isEmpty() ) dfPath = getFilePath( name, m_configDir.absoluteFilePath("help") );
     if( dfPath.isEmpty() ) dfPath = getFilePath( name, ":/help" );
     if( dfPath.isEmpty() ) return help;

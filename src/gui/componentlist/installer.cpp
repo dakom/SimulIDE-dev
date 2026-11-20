@@ -217,8 +217,8 @@ void Installer::installItem( QString itemName )
 void Installer::unInstallItem( QString itemName )
 {
     QDir compSetDir = m_compsDir;
-    compSetDir.cd( itemName );
-    compSetDir.removeRecursively();
+    if( !itemName.isEmpty() && compSetDir.cd( itemName ) ) // If cd() fails don't remove the whole components folder
+        compSetDir.removeRecursively();
     m_installed.remove( itemName );
 
     ComponentList::self()->createList();

@@ -168,6 +168,7 @@ void Hd44780_Base::setDDaddr( int addr )
 {
     if( (m_lineLength==40) && (addr>63) ) addr -= 24;
     m_DDaddr = addr & 0b01111111;
+    if( m_DDaddr > 79 ) m_DDaddr -= 80; // DDRAM has 80 positions
     
     m_writeDDRAM = true;
 }

@@ -63,6 +63,8 @@ Strain::Strain( QString type, QString id )
                             , this, &Strain::getTemp, &Strain::setTemp )
     }, 0} );
     addPropGroup( { tr("Dial"), Dialed::dialProps(), groupNoCopy } );
+
+    updateParameters();
 }
 Strain::~Strain() { }
 

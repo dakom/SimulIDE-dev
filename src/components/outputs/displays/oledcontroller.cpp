@@ -322,6 +322,7 @@ void OledController::paint( QPainter* p, const QStyleOptionGraphicsItem*, QWidge
                 uint8_t byte1 = 0;
                 if( startBit ){                          // bits spread 2 bytes
                     rowByte++;
+                    if( rowByte >= m_rows ) rowByte = 0; // Wrap to first page
                     byte1 = m_DDRAM[col][rowByte];
                     if( m_dispInv ) byte1 = ~byte1;      // Display Inverted
                 }
@@ -335,7 +336,7 @@ void OledController::paint( QPainter* p, const QStyleOptionGraphicsItem*, QWidge
                 {
                     uint8_t pixel;
                     if( bit < 8 ) pixel = byte0 & 1<<bit;
-                    else          pixel = byte1 & 1<<(bit-startBit);
+                    else          pixel = byte1 & 1<<(bit-8);
 
                     if( pixel ){
                         int screenY = m_scanInv ? m_height-1-dy : dy;

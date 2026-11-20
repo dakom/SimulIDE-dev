@@ -44,17 +44,20 @@ void MemData::showTable( int dataSize, int wordBytes )
 
 bool MemData::loadData( QVector<int>* toData, bool resize, int bits )
 {
-    Simulator::self()->pauseSim();
+    bool running = Simulator::self()->simState() > SIM_PAUSED;
+    if( running ) Simulator::self()->pauseSim();
 
     QString dir = changeExt( Circuit::self()->getFilePath(), ".data" );
     QString fileName = QFileDialog::getOpenFileName( nullptr,
                                                     "MemData::loadData", dir,
                        simulideTr( "MemData", "All files (*.*);;.data (*.data);;.bin (*.bin)"));
 
-    if( fileName.isEmpty() ) return false; // User cancels loading
-
+    if( fileName.isEmpty() ){              // User cancels loading
+        if( running ) Simulator::self()->resumeSim();
+        return false;
+    }
     bool ok = loadFile( toData, fileName, resize, bits );
-    Simulator::self()->resumeSim();
+    if( running ) Simulator::self()->resumeSim();
 
     return ok;
 }
@@ -131,6 +134,7 @@ bool MemData::loadHex( QVector<int>* toData, QString file, bool resize, int bits
     uint16_t data;
     int dataEnd = toData->size()-1;
     int WordSize = bits/8;
+    if( WordSize < 1 ) WordSize = 1; // Avoid division by 0 for less than 8 bits
 
     bool ok;
 
@@ -254,7 +258,8 @@ bool MemData::loadBin(QVector<int>* toData, QString file, bool resize, int bits 
 
 void MemData::saveData( QVector<int>* data, int bits )
 {
-     Simulator::self()->pauseSim();
+    bool running = Simulator::self()->simState() > SIM_PAUSED;
+    if( running ) Simulator::self()->pauseSim();
 
     QString dir = changeExt( Circuit::self()->getFilePath(), ".data" );
 
@@ -262,7 +267,10 @@ void MemData::saveData( QVector<int>* data, int bits )
                        simulideTr( "MemData", "Save Data" ), dir,
                        simulideTr( "MemData", "All files (*.*);;.data (*.data);;.bin (*.bin)"));
 
-    if( fileName.isEmpty() ) return; // User cancels saving
+    if( fileName.isEmpty() ){        // User cancels saving
+        if( running ) Simulator::self()->resumeSim();
+        return;
+    }
 
     QFile outFile( fileName );
     int bytes = (bits+7)/8;
@@ -305,7 +313,7 @@ void MemData::saveData( QVector<int>* data, int bits )
             }   }
             outFile.close();
     }   }
-    Simulator::self()->resumeSim();
+    if( running ) Simulator::self()->resumeSim();
 }
 
 void MemData::saveDat( QVector<int>* data, int bits )

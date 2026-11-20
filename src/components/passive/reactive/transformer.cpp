@@ -112,7 +112,7 @@ void Transformer::stamp()
         for( i=j+1; i<n; ++i ) admit[i][j] /= admit[j][j];
     }
     double b[n];
-    m_inva.resize( n, std::vector<double>( n, 0 ) );
+    m_inva.assign( n, std::vector<double>( n, 0 ) ); // assign: resize() would keep old (shorter) rows
 
     for( k=0; k<n; k++)
     {

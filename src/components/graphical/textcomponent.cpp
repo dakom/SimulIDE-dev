@@ -70,6 +70,7 @@ TextComponent::TextComponent( QString type, QString id )
     m_docMargin = m_text->document()->documentMargin();
     m_context = false;
     m_border = 1;
+    m_fixedW = true;
     updateGeometry( 0, 0, 0 );
     
     setFontSize( 10 );
@@ -247,7 +248,7 @@ void TextComponent::setLinkedValue( double v, int i )
     QString str = QString::number( v );
 
     if( i == 0 ) setText( str );
-    else         setText( m_textString+"/n"+str );
+    else         setText( m_textString+"\n"+str );
 }
 
 void TextComponent::paint( QPainter* p, const QStyleOptionGraphicsItem* o, QWidget* w )

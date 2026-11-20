@@ -67,7 +67,9 @@ void UartTx::startTransmission() // Data loaded to ShiftReg
 
     if( mPARITY > parNONE )              // Parity bit
     {
-        bool parity = getParity( data );
+        uint16_t parData = data;
+        if( mDATABITS == 9 ) parData |= m_bit9<<8;  // Parity covers all data bits
+        bool parity = getParity( parData );
 
         if( parity ) m_frame |= 1<<m_framesize;
         m_framesize++;

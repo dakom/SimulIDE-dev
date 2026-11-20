@@ -39,6 +39,7 @@ eMcu::eMcu( Mcu* comp, QString id )
 
     m_freq = 0;
     m_cPerInst = 1;
+    m_cPerTick = 1;
 
     m_wordSize  = 2;
     m_flashSize = 0;

@@ -546,10 +546,10 @@ void Chip::setMargins( QString margins )
 
     QStringList mList = margins.split(",");
     mList.removeAll("");
-    if( margins.size() ) m_topMargin    = mList.takeFirst().toInt();
-    if( margins.size() ) m_bottomMargin = mList.takeFirst().toInt();
-    if( margins.size() ) m_rightMargin  = mList.takeFirst().toInt();
-    if( margins.size() ) m_leftMargin   = mList.takeFirst().toInt();
+    if( mList.size() ) m_topMargin    = mList.takeFirst().toInt();
+    if( mList.size() ) m_bottomMargin = mList.takeFirst().toInt();
+    if( mList.size() ) m_rightMargin  = mList.takeFirst().toInt();
+    if( mList.size() ) m_leftMargin   = mList.takeFirst().toInt();
     update();
 }
 

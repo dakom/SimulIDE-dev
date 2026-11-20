@@ -37,6 +37,7 @@ Pin::Pin( int angle, const QPoint pos, QString id, int index, Component* parent,
     m_unused  = false;
     m_animate = false;
     m_warning = false;
+    m_opCount = 0;
     
     m_dataCannel = nullptr;
     my_connector = nullptr;

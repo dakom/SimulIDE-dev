@@ -88,7 +88,7 @@ void VarSource::setVal( double val )
     if     ( val > m_maxValue ) m_maxValue = val;
     else if( val < m_minValue ) m_minValue = val;
 
-    m_voltw.setValue( val*1000/(m_maxValue-m_minValue) );
+    m_voltw.setValue( (val-m_minValue)*1000/(m_maxValue-m_minValue) );
     m_outValue = val;
     m_changed = true;
     updateButton();
@@ -100,7 +100,7 @@ void VarSource::setMaxValue( double v )
     if( v < m_minValue ) v = m_minValue+1e-3;
     m_maxValue = v;
     if( m_outValue > v ) m_outValue = v;
-    m_voltw.setValue( m_outValue*1000/(m_maxValue-m_minValue) );
+    m_voltw.setValue( (m_outValue-m_minValue)*1000/(m_maxValue-m_minValue) );
     m_changed = true;
 }
 
@@ -109,7 +109,7 @@ void VarSource::setMinValue( double v )
     if( v > m_maxValue ) v = m_maxValue-1e-3;
     m_minValue = v;
     if( m_outValue < v ) m_outValue = v;
-    m_voltw.setValue( m_outValue*1000/(m_maxValue-m_minValue) );
+    m_voltw.setValue( (m_outValue-m_minValue)*1000/(m_maxValue-m_minValue) );
     m_changed = true;
 }
 

@@ -88,7 +88,7 @@ void manCompDialog::initialize( TreeItem* treeItem )
         else                                listItem->setBackground( QColor(255, 255, 255) );
     }
 
-    if( !treeItem ) return;
+    if( !treeItem || !item ) return;
 
     if( item->flags() != 0 ) table->editItem( item );
 

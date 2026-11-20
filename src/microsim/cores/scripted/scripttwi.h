@@ -31,7 +31,7 @@ class ScriptTwi : public McuTwi, public ScriptPerif
         void startScript() override;
 
     private:
-        uint8_t getStaus() { return *m_statReg &= 0b11111000; }
+        uint8_t getStaus() { return *m_statReg & 0b11111000; }
 
         asIScriptFunction* m_byteReceived;
         asIScriptFunction* m_writeByte;

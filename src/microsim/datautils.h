@@ -17,7 +17,7 @@ regBits_t getRegBits( QString bitNames, DataSpace* mcu ); // Get a set of consec
 
 static inline uint8_t overrideBits( uint8_t val, regBits_t bits ) // Replace bits in val with current value in register bits.reg
 {
-    return (val & ~bits.mask) | (*(bits.reg) | bits.mask);
+    return (val & ~bits.mask) | (*(bits.reg) & bits.mask);
 }
 
 static inline void replaceBits( uint8_t val, regBits_t bits ) // Replace bits in register with value

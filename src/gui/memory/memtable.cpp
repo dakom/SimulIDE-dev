@@ -208,6 +208,7 @@ void MemTable::on_table_itemChanged( QTableWidgetItem* item )
 
     if( col > 16 )
     {
+        col -= 17;
         ok = item->text().size() == m_cellBytes;
         if( ok ){
             for( int i=0; i<m_cellBytes; ++i )
@@ -215,7 +216,6 @@ void MemTable::on_table_itemChanged( QTableWidgetItem* item )
                 QChar cv = item->text().at(m_cellBytes-i-1);
                 val += cv.cell() << (8*i);
             }
-            col -= 17;
         }
     }
     else val = item->text().toInt( &ok, 0 );
@@ -227,13 +227,14 @@ void MemTable::on_table_itemChanged( QTableWidgetItem* item )
 
     if( ok && (m_byteRatio > 1) )
     {
+        val = 0;
         int start = dataAddr*m_byteRatio;
         for( int i=0; i<m_byteRatio; ++i )
         {
             int addr = start+i;
             int row = addr/16;
             int colRam = addr%16;
-            int cellVal = table->item( row, colRam )->text().toInt( &ok, 0 );
+            int cellVal = table->item( row, colRam )->text().toInt( &ok, 16 ); // Cells hold hex without prefix
             val |= cellVal<<(i*8);
         }
     }

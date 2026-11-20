@@ -54,6 +54,7 @@ Component::Component( QString type, QString id )
     m_hidden     = false;
     m_crashed    = false;
     m_warning    = false;
+    m_opCount    = 0;
     m_graphical  = false;
     m_isLinker   = false;
     m_linkedTo   = nullptr;

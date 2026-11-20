@@ -27,7 +27,7 @@ void UartRx::enable( uint8_t en )
     if( enabled )  // Start reading
     {
         m_state = usartIDLE;
-        m_framesize = 1+mDATABITS+mPARITY+mSTOPBITS;
+        m_framesize = 1+mDATABITS+(mPARITY > parNONE ? 1 : 0)+mSTOPBITS;
         m_currentBit = 0;
         m_fifoP = -1;
         m_startHigh = m_ioPin->getInpState();
@@ -92,12 +92,12 @@ void UartRx::byteReceived( uint16_t frame )
 {
     if( mDATABITS == 9 && m_ignoreData && (frame & 1<<8) == 0 ) return; // Multi-proccesor data frame
 
-    if( m_fifoP == m_fifoSize )                         // Overrun error
+    if( m_fifoP == m_fifoSize-1 )                       // Overrun error
     {
         m_fifoP--;                                      // Overwite FIFO
         frame |= dataOverrun;
     }
-    if( (frame & 1<<(mDATABITS+mPARITY)) == 0 )         // Check Stop bit
+    if( (frame & 1<<(mDATABITS+(mPARITY > parNONE ? 1 : 0))) == 0 ) // Check Stop bit
         frame |= frameError;                            // Frame Error: wrong stop bit
 
     if( mPARITY > parNONE )                             // Check Parity bit

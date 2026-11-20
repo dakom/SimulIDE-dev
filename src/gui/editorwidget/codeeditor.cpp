@@ -648,7 +648,11 @@ void CodeEditor::keyPressEvent( QKeyEvent* event )
     else if( event->key() == Qt::Key_Backtab )
     {
         if( textCursor().hasSelection() ) indentSelection( true );
-        else textCursor().movePosition( QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor , m_tab.size() );
+        else{
+            QTextCursor cursor = textCursor(); // textCursor() returns a copy
+            cursor.movePosition( QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor , m_tab.size() );
+            setTextCursor( cursor );
+        }
     }
     else
     {

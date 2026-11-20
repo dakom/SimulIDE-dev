@@ -366,6 +366,7 @@ void RamTable::addToWatch( QTableWidgetItem* it )
             {
                 int index = indx+i;
                 if( index > listEnd ) break;
+                if( _row+i >= table->rowCount() ) break;
 
                 QString varName = m_varNames.at( index );
                 if( varName.contains( name ) ) table->item( _row+i, 1 )->setText( varName );

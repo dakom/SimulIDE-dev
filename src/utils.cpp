@@ -170,7 +170,7 @@ QDomDocument fileToDomDoc( QString fileName, QString caller )
     int errorColumn=0;
     if( !domDoc.setContent( &file, false, &error, &errorLine, &errorColumn ) )
     {
-         qDebug() << caller << "Error: Cannot set file to DomDocument:\n"<<fileName<<"\nLine"<<errorLine<<errorColumn+"\n";
+         qDebug() << caller << "Error: Cannot set file to DomDocument:\n"<<fileName<<"\nLine"<<errorLine<<errorColumn<<"\n";
          qDebug() << error;
          domDoc.clear();
     }

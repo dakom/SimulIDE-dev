@@ -153,6 +153,7 @@ void PicTimer2::configureA( uint8_t NewT2CON )
 void PicTimer2::configureB( uint8_t NewPR2 )
 {
     m_ovfMatch  = NewPR2;
+    m_ovfPeriod = m_ovfMatch + 1;
 }
 
 //--------------------------------------------------

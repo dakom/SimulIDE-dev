@@ -72,7 +72,7 @@ void Pic14eCore::restoreContext()
 
 inline void Pic14eCore::CALLW()
 {
-    CALL_ADDR( *m_Wreg | ((uint16_t)(m_dataMem[m_PCHaddr] & 0b00011000)<<8) );
+    CALL_ADDR( *m_Wreg | ((uint16_t)(m_dataMem[m_PCHaddr] & 0x7F)<<8) );
 }
 
 inline void Pic14eCore::BRW()
@@ -175,7 +175,7 @@ inline void Pic14eCore::MOVWI_Fd( uint8_t n )
 
 inline void Pic14eCore::MOVLB( uint8_t k )
 {
-    *m_BSR = k & 0x0F;
+    *m_BSR = k & 0x1F;
     setBank( *m_BSR );
 }
 
@@ -200,17 +200,27 @@ inline void Pic14eCore::ASRF( uint8_t f, uint8_t d )
     setValue( newV, f, d );
 }
 
-inline void Pic14eCore::SUBWFB( uint8_t f, uint8_t d )
+inline void Pic14eCore::SUBWFB( uint8_t f, uint8_t d ) // f - W - !C
 {
-    uint8_t carry = ( *m_STATUS & 1<<C ) ? 1 : 0;
-    uint8_t newV = add( GET_RAM( f )+carry, *m_Wreg );
+    uint8_t borrow = ( *m_STATUS & 1<<C ) ? 0 : 1;
+    uint8_t v1 = GET_RAM( f );
+    uint8_t v2 = *m_Wreg;
+    int16_t newV = v1 - v2 - borrow;
+    write_S_Bit( Z, (newV & 0xFF)==0 );
+    write_S_Bit( C, newV >= 0 );
+    write_S_Bit( DC, ((int16_t)((v1&0xF)-(v2&0xF)-borrow) >= 0) );
     setValue( newV, f, d );
 }
 
-inline void Pic14eCore::ADDWFC( uint8_t f, uint8_t d )
+inline void Pic14eCore::ADDWFC( uint8_t f, uint8_t d ) // f + W + C
 {
     uint8_t carry = ( *m_STATUS & 1<<C ) ? 1 : 0;
-    uint8_t newV = sub( GET_RAM( f )+carry, *m_Wreg );
+    uint8_t v1 = GET_RAM( f );
+    uint8_t v2 = *m_Wreg;
+    uint16_t newV = v1 + v2 + carry;
+    write_S_Bit( Z, (newV & 0xFF)==0 );
+    write_S_Bit( C, newV & 0x100 );
+    write_S_Bit( DC, ((v1&0xF)+(v2&0xF)+carry) > 0xF );
     setValue( newV, f, d );
 }
 
@@ -218,8 +228,9 @@ inline void Pic14eCore::ADDWFC( uint8_t f, uint8_t d )
 
 inline void Pic14eCore::ADDFSR( uint8_t n, uint8_t k )
 {
-    if( n == 0 ) setFSR0( getFSR0()+k );
-    else         setFSR1( getFSR1()+k );
+    int8_t off = (k & 0x20) ? (k | 0xC0) : k;  // k is 6 bits signed
+    if( n == 0 ) setFSR0( getFSR0()+off );
+    else         setFSR1( getFSR1()+off );
 }
 
 inline void Pic14eCore::MOVLP( uint8_t k )
@@ -234,26 +245,36 @@ inline void Pic14eCore::BRA( int16_t k )
     m_mcu->cyclesDone = 2;
 }
 
-inline void Pic14eCore::MOVIW( uint8_t n, uint8_t k )
+inline void Pic14eCore::MOVIW( uint8_t n, uint8_t k ) // W = [FSRn+k], FSRn unchanged
 {
+    int8_t off = (k & 0x20) ? (k | 0xC0) : k;  // k is 6 bits signed
     if( n == 0 ){
-        setFSR0( getFSR0()+k );
+        uint16_t fsr = getFSR0();
+        setFSR0( fsr+off );
         *m_Wreg = GET_RAM( 0 );
+        setFSR0( fsr );
     }else{
-        setFSR1( getFSR1()+k );
+        uint16_t fsr = getFSR1();
+        setFSR1( fsr+off );
         *m_Wreg = GET_RAM( 1 );
+        setFSR1( fsr );
     }
     write_S_Bit( Z, *m_Wreg==0 );
 }
 
-inline void Pic14eCore::MOVWI( uint8_t n, uint8_t k )
+inline void Pic14eCore::MOVWI( uint8_t n, uint8_t k ) // [FSRn+k] = W, FSRn unchanged
 {
+    int8_t off = (k & 0x20) ? (k | 0xC0) : k;  // k is 6 bits signed
     if( n == 0 ){
-        *m_Wreg = GET_RAM( 0 );
-        setFSR0( getFSR0()+k );
+        uint16_t fsr = getFSR0();
+        setFSR0( fsr+off );
+        SET_RAM( 0, *m_Wreg );
+        setFSR0( fsr );
     }else{
-        *m_Wreg = GET_RAM( 1 );
-        setFSR1( getFSR1()+k );
+        uint16_t fsr = getFSR1();
+        setFSR1( fsr+off );
+        SET_RAM( 1, *m_Wreg );
+        setFSR1( fsr );
     }
 }
 
@@ -301,10 +322,10 @@ void Pic14eCore::decode( uint16_t instr )
         uint8_t n = instr & 1<<6;
         // Operations with literal k
         switch( instr & 0x3F80 ) {
-            case 0x3100: ADDFSR( n, instr & 0x7F ); return; // ADDFSR FSRn,k 11 0001 0nkk kkkk
-            case 0x3180: MOVLP( instr & 0x1F );     return; // MOVLP       k 11 0001 1kkk kkkk
-            case 0x3F00: MOVIW( n, instr & 0x7F );  return; // MOVIW k[FSRn] 11 1111 0nkk kkkk
-            case 0x3F80: MOVWI( n, instr & 0x7F );  return; // MOVWI k[FSRn] 11 1111 1nkk kkkk
+            case 0x3100: ADDFSR( n, instr & 0x3F ); return; // ADDFSR FSRn,k 11 0001 0nkk kkkk
+            case 0x3180: MOVLP( instr & 0x7F );     return; // MOVLP       k 11 0001 1kkk kkkk
+            case 0x3F00: MOVIW( n, instr & 0x3F );  return; // MOVIW k[FSRn] 11 1111 0nkk kkkk
+            case 0x3F80: MOVWI( n, instr & 0x3F );  return; // MOVWI k[FSRn] 11 1111 1nkk kkkk
         }
         if( (instr & 0x3E00) == 0x3200 ){ BRA( instr & 0x1FF); return; }// BRA k 11 001k kkkk kkkk
     }

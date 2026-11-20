@@ -133,6 +133,7 @@ void SevenSegmentBCD::setLinkedValue( double v, int i )
 {
     int vInt = v;
     vInt &= 0xFF;
+    if( i == 0 && vInt > 16 ) vInt = 16;     // m_segments has 17 entries, last one is blank
     if( i == 0 ) m_digit = m_segments[vInt]; // Display value
     else         m_digit = vInt;             // 1 bit for each segment
     m_changed = true;

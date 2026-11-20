@@ -601,7 +601,6 @@ void AvrTimer16bit::updtWgm()
 
 void AvrTimer16bit::topReg0Changed( uint8_t val )
 {
-    if( *m_topReg0L == val ) return;
     *m_topReg0L = val;
     updtWgm();
 
@@ -611,7 +610,6 @@ void AvrTimer16bit::topReg0Changed( uint8_t val )
 
 void AvrTimer16bit::ICRXLchanged( uint8_t val )
 {
-    if( *m_topReg1L == val ) return;
     *m_topReg1L = val;
     updtWgm();
 }

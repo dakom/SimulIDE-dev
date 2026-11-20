@@ -36,7 +36,7 @@ class PicMrCore : public Mcu8bits
         uint16_t m_PCLaddr;
         uint16_t m_PCHaddr;
 
-        uint32_t m_stack[8];
+        uint32_t m_stack[16]; // Up to 16 levels (Enhanced Mid-Range)
         uint8_t  m_sp;
         uint8_t  m_stackSize;
 

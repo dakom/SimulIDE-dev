@@ -18,6 +18,9 @@ void PicIcUnit::configure( uint8_t CCPxM ) // CCPxM0,CCPxM1,CCPxM2,CCPxM3
     m_enabled = true;
     m_icPin->changeCallBack( this, true );
 
+    m_fallingEdge = false;
+    m_prescaler   = 1;
+
     switch( CCPxM ) {
         case 4: m_fallingEdge = true; break; // Falling Edge
         case 5:                       break; // Rising Edge

@@ -23,6 +23,8 @@ Connector::Connector( QString type, QString id, Pin* startpin, Pin* endpin )
     if( id.isEmpty() ) qDebug() << "ERROR! Connector::Connector empty Id";
 
     m_step = 0;
+    m_current = 0;
+    m_currentSpeed = 0;
     m_actLine   = 0;
     m_lastindex = 0;
     m_freeLine = false;

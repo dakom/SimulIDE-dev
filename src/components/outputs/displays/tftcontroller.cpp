@@ -79,7 +79,7 @@ void TftController::commandReceived()
 
     switch( m_rxReg )
     {
-    case 0x00: displayReset();           break; //   NOP
+    case 0x00:                           break; //   NOP
     case 0x01: displayReset();           break; //   Software Reset
     /*case 0x04: m_readBytes = 4; break; // Read Display identification information
         case 0x09: m_readBytes = 5; break; // Read Display Status
@@ -273,7 +273,8 @@ void TftController::writeRam() // Memory Write. Overriden by displays
     if( addrX > m_maxX ) addrX -= m_maxX+1;
     if( addrY > m_maxY ) addrY -= m_maxY+1;
 
-    m_DDRAM[addrX][addrY] = m_data;
+    if( addrX < m_DDRAM.size() && addrY < m_DDRAM[addrX].size() ) // Avoid writing out of RAM
+        m_DDRAM[addrX][addrY] = m_data;
 
     m_addrX++;
     if( m_addrX > m_endX ){
