@@ -93,6 +93,8 @@ class Circuit : public QGraphicsScene
 
         void newconnector( Pin* startpin, bool save=true );
         void closeconnector( Pin* endpin, bool save=false );
+
+        void pinDeleted( Pin* pin ) { if( pin == m_hoverPin ) m_hoverPin = nullptr; }
         void deleteNewConnector();
         //void updateConnectors();
         Connector* getNewConnector() { return m_newConnector; }
@@ -173,12 +175,18 @@ class Circuit : public QGraphicsScene
 
         void setSize( int width, int height );
 
+        Pin* findWireTarget( QPointF pos, bool* valid );
+        Pin* updateHoverPin( QPointF pos ); // Returns the pin the new wire would connect to, if any
+        void clearHoverPin();
+
         QString m_filePath;
         QString m_backupPath;
 
         QRect        m_scenerect;
         CircuitView* m_graphicView;
         Connector*   m_newConnector;
+        Pin*         m_hoverPin;      // Pin under the mouse while drawing a wire
+        bool         m_hoverValid;
 
         int m_sceneWidth;
         int m_sceneHeight;

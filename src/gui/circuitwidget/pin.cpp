@@ -7,6 +7,7 @@
 
 #include <QApplication>
 #include <QPainter>
+#include <QPainterPath>
 
 #include "pin.h"
 #include "bus.h"
@@ -37,6 +38,8 @@ Pin::Pin( int angle, const QPoint pos, QString id, int index, Component* parent,
     m_unused  = false;
     m_animate = false;
     m_warning = false;
+    m_nodePin = parent && parent->itemType() == "Node";
+    m_conHint = hintNone;
     m_opCount = 0;
     
     m_dataCannel = nullptr;
@@ -87,6 +90,7 @@ Pin::Pin( int angle, const QPoint pos, QString id, int index, Component* parent,
 Pin::~Pin()
 {
     Circuit::self()->remPin( m_id );
+    Circuit::self()->pinDeleted( this );
 }
 
 void Pin::connectorRemoved()
@@ -134,6 +138,7 @@ void  Pin::setConnector( Connector* connector )
 {
     my_connector = connector;
     m_warning = false;
+    update();                          // Show/hide the "connected" marker
 
     if( my_connector )
     {
@@ -364,6 +369,13 @@ void Pin::setVisible( bool visible )
     QGraphicsItem::setVisible( visible );
 }
 
+void Pin::setConHint( conHint_t hint )
+{
+    if( m_conHint == hint ) return;
+    m_conHint = hint;
+    update();
+}
+
 void Pin::warning( bool w )
 {
     m_warning = w;
@@ -427,7 +439,9 @@ void Pin::paint( QPainter* p, const QStyleOptionGraphicsItem*, QWidget* )
     QPen pen( QColor( *m_foreColor ), 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin );
     //QPen pen( m_color[0], 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin );
 
-    if     ( m_unused  ) pen.setColor( QColor( 75, 120, 170 ));
+    if     ( m_conHint == hintValid   ) pen.setColor( QColor( 0, 170, 60 ) );
+    else if( m_conHint == hintInvalid ) pen.setColor( QColor( 220, 40, 40 ) );
+    else if( m_unused  ) pen.setColor( QColor( 75, 120, 170 ));
     else if( m_isBus   ) pen.setColor( Qt::darkGreen );
     else if( m_animate ) pen.setColor( m_color[m_pinState] );
 
@@ -459,4 +473,20 @@ void Pin::paint( QPainter* p, const QStyleOptionGraphicsItem*, QWidget* )
             if( m_pinState >= driven_low )
                 p->drawLine( 2,-2, 0, 0);  // Draw upper half Output arrow
         }
-}   }
+    }
+    if( m_conHint == hintValid || m_conHint == hintInvalid ) // Wire being drawn is over this pin: ring around the tip
+    {
+        QColor color = (m_conHint == hintValid) ? QColor( 0, 170, 60 ) : QColor( 220, 40, 40 );
+        p->setOpacity( 1 );
+        p->setBrush( Qt::NoBrush );
+        p->setPen( QPen( color, 1.2 ) );
+        p->drawEllipse( QPointF( 0, 0 ), 3.8, 3.8 );
+    }
+    else if( (my_connector || m_conHint == hintStart) && !m_nodePin ) // Connected or wire started here: green dot at the tip
+    {
+        p->setOpacity( 1 );
+        p->setPen( Qt::NoPen );
+        p->setBrush( QColor( 0, 170, 60 ) );
+        p->drawEllipse( QPointF( 0, 0 ), 1.4, 1.4 );
+    }
+}
