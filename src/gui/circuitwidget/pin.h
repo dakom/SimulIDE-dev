@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <QPainterPath>
+
 #include "component.h"
 #include "updatable.h"
 #include "e-pin.h"
@@ -42,7 +44,10 @@ class Pin : public QGraphicsItem, public ePin, public Updatable
         enum { Type = UserType + 3 };
         int type() const override { return Type; }
 
-        QRectF boundingRect() const override { return m_area; }
+        // Paint area includes the connection markers drawn around the tip
+        QRectF boundingRect() const override { return m_area.united( QRectF(-5,-5, 10, 10 ) ); }
+        // Hit area stays the pin itself
+        QPainterPath shape() const override { QPainterPath path; path.addRect( m_area ); return path; }
 
         QString pinId() { return m_id; }
         
@@ -100,6 +105,14 @@ class Pin : public QGraphicsItem, public ePin, public Updatable
 
         void setDataChannel( LaChannel* ch ) { m_dataCannel = ch; }
 
+        enum conHint_t{     // Feedback while drawing a wire
+            hintNone=0,
+            hintValid,      // The wire being drawn will connect to this pin
+            hintInvalid,    // The mouse is over this pin, but the wire can't connect to it
+            hintStart       // The wire being drawn starts at this pin
+        };
+        void setConHint( conHint_t hint );
+
         void warning( bool w );
         void animate( bool an );
         virtual void updateStep() override;
@@ -130,6 +143,9 @@ class Pin : public QGraphicsItem, public ePin, public Updatable
         bool m_unused;
         bool m_animate;
         bool m_warning;
+        bool m_nodePin;     // Pin of a Node (junction): already drawn as a dot
+
+        conHint_t m_conHint;
 
         double  m_opCount;
 

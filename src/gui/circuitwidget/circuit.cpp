@@ -8,6 +8,7 @@
 #include <QClipboard>
 #include <QMimeData>
 #include <QSettings>
+#include <cmath>
 
 #include "circuit.h"
 #include "simulator.h"
@@ -66,6 +67,8 @@ Circuit::Circuit( int width, int height, CircuitView* parent )
 
     m_board = nullptr;
     m_newConnector = nullptr;
+    m_hoverPin   = nullptr;
+    m_hoverValid = false;
     m_subCircuit = nullptr;
     m_seqNumber = 0;
     m_conNumber = 0;
@@ -922,11 +925,15 @@ void Circuit::newconnector( Pin* startpin, bool save )
     QPoint p1 = startpin->scenePos().toPoint();
     QPoint p2 = startpin->scenePos().toPoint();
     m_newConnector->addConLine( p1.x(), p1.y(), p2.x(), p2.y(), 0 );
+
+    startpin->setConHint( Pin::hintStart );
 }
 
 void Circuit::closeconnector( Pin* endpin, bool save )
 {
+    clearHoverPin();
     m_conStarted = false;
+    if( m_newConnector->startPin() ) m_newConnector->startPin()->setConHint( Pin::hintNone );
     m_newConnector->closeCon( endpin );
     if( save ) endUndoStep();
 }
@@ -934,6 +941,8 @@ void Circuit::closeconnector( Pin* endpin, bool save )
 void Circuit::deleteNewConnector()
 {
     if( !m_conStarted ) return;
+    clearHoverPin();
+    if( m_newConnector->startPin() ) m_newConnector->startPin()->setConHint( Pin::hintNone );
     removeConnector( m_newConnector );
     m_conStarted = false;
 
@@ -972,12 +981,86 @@ void Circuit::deleteNewConnector()
     file.close();
 }*/
 
+Pin* Circuit::findWireTarget( QPointF pos, bool* valid ) // Pin a click at pos would connect the new wire to
+{
+    *valid = false;
+    if( !m_conStarted || !m_newConnector ) return nullptr;
+
+    Pin* startPin = m_newConnector->startPin();
+    const double range = 4; // Snap to pin tips closer than this
+
+    Pin* best = nullptr;
+    bool bestOver  = false;
+    bool bestValid = false;
+    double bestDist = 1e9;
+
+    QRectF area( pos.x()-range, pos.y()-range, 2*range, 2*range );
+    for( QGraphicsItem* it : items( area ) )
+    {
+        if( it->type() != Pin::Type ) continue;
+        Pin* pin = qgraphicsitem_cast<Pin*>( it );
+        if( pin == startPin || !pin->isVisible() || pin->unused() ) continue;
+
+        bool over = pin->contains( pin->mapFromScene( pos ) );
+        QPointF d = pin->scenePos() - pos;
+        double dist = std::sqrt( d.x()*d.x() + d.y()*d.y() );
+        if( !over && dist > range ) continue;
+
+        bool ok = !pin->connector() && pin->isBus() == m_newConnector->isBus();
+        if( !ok && !over ) continue; // Only flag invalid pins right under the mouse
+
+        // Priority: pin under the mouse, then valid pin, then nearest tip
+        bool better = false;
+        if     ( over != bestOver  ) better = over;
+        else if( ok   != bestValid ) better = ok;
+        else                         better = dist < bestDist;
+        if( !best || better )
+        {
+            best = pin;
+            bestOver  = over;
+            bestValid = ok;
+            bestDist  = dist;
+    }   }
+    *valid = bestValid;
+    return best;
+}
+
+Pin* Circuit::updateHoverPin( QPointF pos )
+{
+    bool valid = false;
+    Pin* pin = findWireTarget( pos, &valid );
+
+    if( pin != m_hoverPin || valid != m_hoverValid )
+    {
+        if( m_hoverPin ) m_hoverPin->setConHint( Pin::hintNone );
+        m_hoverPin   = pin;
+        m_hoverValid = valid;
+        if( m_hoverPin ) m_hoverPin->setConHint( valid ? Pin::hintValid : Pin::hintInvalid );
+    }
+    return valid ? pin : nullptr;
+}
+
+void Circuit::clearHoverPin()
+{
+    if( m_hoverPin ) m_hoverPin->setConHint( Pin::hintNone );
+    m_hoverPin   = nullptr;
+    m_hoverValid = false;
+}
+
 void Circuit::mousePressEvent( QGraphicsSceneMouseEvent* event )
 {
     if( event->button() == Qt::LeftButton )
     {
         //if( event->modifiers() != Qt::NoModifier ) return;  // CircuitView adds a modifier to implement Circuit panning
 
+        if( m_conStarted && !(event->modifiers() & Qt::ControlModifier) )
+        {
+            if( Pin* target = updateHoverPin( event->scenePos() ) ) // Connect to the highlighted pin,
+            {                                                      // even if a wire is drawn over it
+                event->accept();
+                closeconnector( target, true );
+                return;
+        }   }
         if( m_conStarted ) event->accept();
         QGraphicsScene::mousePressEvent( event );
 
@@ -995,7 +1078,18 @@ void Circuit::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
 {
     if( event->button() == Qt::LeftButton )
     {
-        if( m_conStarted ) m_newConnector->incActLine() ;
+        if( m_conStarted )
+        {
+            Pin* target = nullptr;
+            QPointF drag = event->scenePos() - event->buttonDownScenePos( Qt::LeftButton );
+            bool dragged = drag.manhattanLength() > 4;  // Not a click: the wire was dragged here
+
+            if( dragged && !(event->modifiers() & Qt::ControlModifier) )
+                target = updateHoverPin( event->scenePos() );
+
+            if( target ) closeconnector( target, true ); // Wire dragged and released over a pin
+            else         m_newConnector->incActLine() ;
+        }
         QGraphicsScene::mouseReleaseEvent( event );
     }
     else if( event->button() == Qt::RightButton )
@@ -1011,7 +1105,9 @@ void Circuit::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
     {
         event->accept();
         if( event->modifiers() & Qt::ShiftModifier) m_newConnector->m_freeLine = true;
-        m_newConnector->updateConRoute( 0l, event->scenePos() );
+
+        Pin* target = updateHoverPin( event->scenePos() );   // Snap the wire end to a pin it can connect to
+        m_newConnector->updateConRoute( 0l, target ? target->scenePos() : event->scenePos() );
     }
     QGraphicsScene::mouseMoveEvent( event );
 }
